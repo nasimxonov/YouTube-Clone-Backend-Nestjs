@@ -17,13 +17,14 @@ model User {
   id            String         @id @default(uuid())
   email         String         @unique
   username      String         @unique
+  phone_number  String?        @unique
+  password      String         
   firstName     String
   lastName      String
   avatar        String?
   role          Role           @default(USER)
   watchHistory  WatchHistory[]
   notifications Notification[]
-
   is_email_verified Boolean  @default(false)
   is_phone_verified Boolean  @default(true)
   createdAt         DateTime @default(now())
@@ -38,6 +39,8 @@ model User {
   playlists     Playlist[]
   @@map("user")
 }
+
+
 // KEYINROQ QO'SHISH MUMKIN BO'LGAN QISMLAR:
 // - channelBanner String?
 // - channelDescription String?
