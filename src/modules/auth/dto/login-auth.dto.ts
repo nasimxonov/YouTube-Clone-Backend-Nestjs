@@ -1,8 +1,8 @@
-import { IsPhoneNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class sendCodeLoginDto {
   @IsString()
-  phone: string;
+  phone_number: string;
   @IsString()
   password: string;
 }
@@ -11,5 +11,5 @@ export class verifyCodeLoginDto {
   @IsString()
   code: string;
   @IsString()
-  phone: string;
+  phone_number: string;
 }

@@ -16,21 +16,21 @@ import { SendOtpDto } from './dto/send-otp.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {
-    console.log('asdaasds');
-    
   }
 
   @Post('send-otp')
   async sendOtpUser(@Body() sendOtpDto: SendOtpDto) {
-    console.log('asdad');
-    
+  
     const response = await this.authService.sendOtpUser(sendOtpDto);
     return response;
   }
 
   @Post('verify-otp')
   async verifyOtp(@Body() data: VerifyOtpDto) {
+    
     return await this.authService.verifyOtp(data);
+
+
   }
 
   @Post('register')

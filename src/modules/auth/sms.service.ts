@@ -31,10 +31,7 @@ class SmsService {
     const token = await this.getToken();
     const formData = new FormData();
     formData.set('mobile_phone', phone_number);
-    formData.set(
-      'message',
-      `SpiskaUz dasturi ro'yhatdan o'tish tasdiqlash kodi: ${otp}`,
-    );
+    formData.set('message', `StudyHub ilovasiga kirish kodi:${otp}`);
     formData.set('from', '4546');
     const { status } = await axios.post(url, formData, {
       headers: {

@@ -14,21 +14,21 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  username      String         @unique
-  phone_number  String?        @unique
-  password      String         
-  firstName     String
-  lastName      String
-  avatar        String?
-  role          Role           @default(USER)
-  watchHistory  WatchHistory[]
-  notifications Notification[]
-  is_email_verified Boolean  @default(false)
-  is_phone_verified Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                String         @id @default(uuid())
+  email             String         @unique
+  username          String         @unique
+  phone_number      String?        @unique
+  password          String
+  firstName         String
+  lastName          String
+  avatar            String?
+  role              Role           @default(USER)
+  watchHistory      WatchHistory[]
+  notifications     Notification[]
+  is_email_verified Boolean        @default(false)
+  is_phone_verified Boolean        @default(true)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
   // Relations
   videos        Video[]
@@ -37,9 +37,9 @@ model User {
   subscriptions Subscription[] @relation("UserSubscriptions")
   subscribers   Subscription[] @relation("UserSubscribers")
   playlists     Playlist[]
+
   @@map("user")
 }
-
 
 // KEYINROQ QO'SHISH MUMKIN BO'LGAN QISMLAR:
 // - channelBanner String?
@@ -73,6 +73,7 @@ model Video {
   author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments Comment[]
   likes    Like[]
+
   @@map("video")
 }
 
@@ -93,21 +94,21 @@ model Comment {
   createdAt  DateTime @default(now())
 
   // Relations
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  videoId  String
-  video    Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  likes    Like[]
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  videoId       String
+  video         Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  likes         Like[]
+  // KEYINROQ QO'SHISH MUMKIN (REPLY SYSTEM):
+  dislikesCount Int       @default(0)
+  isPinned      Boolean   @default(false)
+  updatedAt     DateTime  @updatedAt
+  parentId      String?
+  parent        Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies       Comment[] @relation("CommentReplies")
+
   @@map("comment")
 }
-
-// KEYINROQ QO'SHISH MUMKIN (REPLY SYSTEM):
-// - dislikesCount Int @default(0)
-// - isPinned Boolean @default(false)
-// - updatedAt DateTime @updatedAt
-// - parentId String?
-// - parent Comment? @relation("CommentReplies", fields: [parentId], references: [id])
-// - replies Comment[] @relation("CommentReplies")
 
 model Subscription {
   id                   String   @id @default(cuid())
@@ -133,6 +134,7 @@ model Playlist {
   authorId String
   author   User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
   videos   PlaylistVideo[]
+
   @@map("playlist")
 }
 
@@ -198,6 +200,7 @@ model Notification {
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("natification")
 }
 

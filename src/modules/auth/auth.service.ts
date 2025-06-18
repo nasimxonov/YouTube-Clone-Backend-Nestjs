@@ -10,7 +10,7 @@ import PrismaService from 'src/core/database/prisma.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import VerifyOtpDto from './dto/verify.otp.dto';
 import OtpService from './otp.service';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { sendCodeLoginDto, verifyCodeLoginDto } from './dto/login-auth.dto';
 import { SendOtpDto } from './dto/send-otp.dto';
 
@@ -85,7 +85,7 @@ export class AuthService {
   async sendCodeLogin(data: sendCodeLoginDto) {
     try {
       const findUser = await this.db.user.findUnique({
-        where: { phone_number: data.phone },
+        where: { phone_number: data.phone_number },
       });
       if (!findUser) throw new ConflictException('User not found');
 
@@ -97,28 +97,38 @@ export class AuthService {
         throw new UnauthorizedException('Incorrect password');
       }
 
-      const res = await this.otpService.sendOtp(data.phone);
+      const res = await this.otpService.sendOtp(data.phone_number);
       if (!res) throw new InternalServerErrorException('Server error');
 
       return {
         message: 'Code sended',
       };
     } catch (error) {
-      throw new InternalServerErrorException('Internal server error');
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ConflictException ||
+        error instanceof UnauthorizedException
+      ) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(
+        error.message || 'Internal server error',
+      );
     }
   }
 
   async verifyCodeLogin(data: verifyCodeLoginDto) {
     try {
       const existedUser = await this.db.user.findUnique({
-        where: { phone_number: data.phone },
+        where: { phone_number: data.phone_number },
       });
       if (!existedUser) throw new BadRequestException('User not found');
 
-      await this.otpService.verifyOtpSendedUser(data.phone, data.code);
+      await this.otpService.verifyOtpSendedUser(data.phone_number, data.code);
 
       const token = await this.jwtService.signAsync({ userId: existedUser.id });
-      const key = `user:${data.phone}`;
+      const key = `user:${data.phone_number}`;
       await this.otpService.delSessionTokenUser(key);
       return token;
     } catch (error) {

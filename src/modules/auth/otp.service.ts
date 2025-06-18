@@ -3,7 +3,7 @@ import RedisService from 'src/core/database/redis.service';
 import { generate } from 'otp-generator';
 import SmsService from './sms.service';
 import OtpSecurityService from './otp.security.service';
-import * as crypto from 'crypto'; 
+import * as crypto from 'crypto';
 
 @Injectable()
 class OtpService {
@@ -22,18 +22,17 @@ class OtpService {
     });
   }
 
-  private getSessionToken() {
+  public getSessionToken() {
     return crypto.randomUUID();
   }
 
   async sendOtp(phone_number: string) {
     await this.otpSecurityService.checkIfTemporaryBlockedUser(phone_number);
 
-    const key = `user:${phone_number}`; 
-    await this.checkOtpExisted(key);
+    await this.checkOtpExisted(phone_number);
 
     const tempOtp = this.generateOtp();
-    const responseRedis = await this.redisService.setOtp(key, tempOtp); 
+    const responseRedis = await this.redisService.setOtp(phone_number, tempOtp);
 
     if (responseRedis === 'OK') {
       await this.smsService.sendSms(phone_number, tempOtp);
@@ -41,7 +40,9 @@ class OtpService {
     }
   }
 
-  async checkOtpExisted(key: string) {
+  async checkOtpExisted(phone_number: string) {
+    const key = `user:${phone_number}`;
+
     const checkOtp = await this.redisService.getOtp(key);
     if (checkOtp) {
       const ttl = await this.redisService.getTTLKey(key);
@@ -80,7 +81,9 @@ class OtpService {
   }
 
   async checkSessionTokenUser(key: string, token: string) {
+    
     const sessionToken = await this.redisService.getKey(key);
+    
     if (!sessionToken || sessionToken !== token)
       throw new BadRequestException('session token expired');
   }
@@ -88,6 +91,8 @@ class OtpService {
   async delSessionTokenUser(key: string) {
     await this.redisService.delKey(key);
   }
+
+  
 }
 
 export default OtpService;
