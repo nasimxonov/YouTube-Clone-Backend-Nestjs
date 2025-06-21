@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY package*.json yarn.lock ./
 
-RUN yarn install --frozen-lockfile && yarn cache clean && npx prisma generate
-
 COPY prisma ./prisma
+
+RUN yarn install --frozen-lockfile && yarn cache clean && npx prisma generate
 
 COPY . .
 
