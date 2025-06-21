@@ -1,34 +1,33 @@
 import { Injectable, Logger } from '@nestjs/common';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 @Injectable()
-export default class RedisService {
+export class RedisService {
   public redis: Redis;
   private duration: number = 60;
-  private readonly logger = new Logger(RedisService.name)
+  private readonly logger = new Logger(RedisService.name);
   constructor() {
     this.redis = new Redis({
       port: +(process.env.REDIS_PORT as string),
       host: process.env.REDIS_HOST as string,
     });
     this.redis.on('connect', () => {
-      this.logger.log("Redis connected!!")
+      this.logger.log('Redis connected!!');
     });
     this.redis.on('error', (err) => {
-      this.logger.error("Redis connecting error!!")
+      this.logger.error('Redis connecting error!!');
       this.redis.quit();
       process.exit(1);
     });
   }
   async setOtp(phone_number: string, otp: string): Promise<string> {
     const key = `user:${phone_number}`;
-    
+
     const result = await this.redis.setex(key, this.duration, otp);
     return result;
   }
-  async getOtp(key: string) {    
+  async getOtp(key: string) {
     const otp = await this.redis.get(key);
-    console.log(key, otp);
-    
+
     return otp;
   }
   async getTTLKey(key: string) {

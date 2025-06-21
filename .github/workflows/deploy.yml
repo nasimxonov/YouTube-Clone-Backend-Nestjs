@@ -1,0 +1,29 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > youtube.pem
+          chmod 600 youtube.pem
+          ssh -i youtube.pem -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST '
+            sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+              -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+
+            cd /home/ubuntu/app/youtube
+            git pull origin main
+
+            sudo docker-compose down
+            sudo docker-compose up --build -d
+          '

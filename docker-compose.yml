@@ -1,0 +1,12 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-api
+    ports:
+      - '4002:4000'
+    restart: always
+    environment:
+      NODE_ENV: production
+    command: yarn start:prod

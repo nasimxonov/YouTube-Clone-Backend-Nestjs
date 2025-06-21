@@ -29,7 +29,7 @@
 - Analytics va metrics
 - Rate limiting va security
 
-## 🏗️ Database Schema (Prisma)
+## 🏗️ Database Schema (Prisma)  
 
 O'quvchilar quyidagi modellarni o'zlari yaratishlari kerak:
 
@@ -390,6 +390,7 @@ GET /videos/feed?limit=20&page=1&category=education&duration=medium&sort=popular
 ```
 
 **Query Parameters:**
+
 
 - `limit`: Number of videos per page (1-50)
 - `page`: Page number

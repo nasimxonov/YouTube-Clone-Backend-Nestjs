@@ -1,37 +1,26 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly jwtService: JwtService,
-  ) {}
-
-  canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    if (!roles || roles.length === 0) return true;
-
+  constructor(private readonly reflector: Reflector) {}
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = request.cookies['token'];
+    const role = request.user.role;
+    const handler = context.getHandler();
+    const classHandler = context.getClass();
+    const rolesKey = this.reflector.getAllAndMerge('roles', [
+      handler,
+      classHandler,
+    ]);
+    if (!rolesKey.includes(role))
+      throw new ForbiddenException('Kirish mumkin emas');
 
-    if (!token) throw new ForbiddenException("Token yo'q");
-
-    try {
-      const user = this.jwtService.verify(token);
-
-      if (!user || !roles.includes(user.role)) {
-        throw new ForbiddenException("Sizda bu sahifaga ruxsat yo'q");
-      }
-      return true;
-    } catch {
-      throw new ForbiddenException("Noto'g'ri token yoki role yo'q");
-    }
+    return true;
   }
 }

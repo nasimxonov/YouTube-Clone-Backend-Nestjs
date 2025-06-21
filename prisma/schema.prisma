@@ -23,14 +23,16 @@ model User {
   lastName          String
   avatar            String?
   role              Role           @default(USER)
-  watchHistory      WatchHistory[]
-  notifications     Notification[]
   is_email_verified Boolean        @default(false)
   is_phone_verified Boolean        @default(true)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
-
-  // Relations
+  channelName        String?        @default("")
+  channelDescription String?        @default("")
+  channelBanner      String?        @default("")
+  totalViews         BigInt         @default(0)
+  watchHistory       WatchHistory[]
+  notifications      Notification[]
   videos        Video[]
   comments      Comment[]
   likes         Like[]
@@ -40,6 +42,8 @@ model User {
 
   @@map("user")
 }
+
+
 
 // KEYINROQ QO'SHISH MUMKIN BO'LGAN QISMLAR:
 // - channelBanner String?
@@ -56,9 +60,10 @@ model Video {
   id             String          @id @default(uuid())
   title          String
   description    String?
+  
   thumbnail      String?
   videoUrl       String
-  duration       Int // seconds
+  duration       Int
   playlistVideos PlaylistVideo[]
   watchHistory   WatchHistory[]
   status         VideoStatus     @default(PROCESSING)
@@ -67,8 +72,7 @@ model Video {
   likesCount     Int             @default(0)
   dislikesCount  Int             @default(0)
   createdAt      DateTime        @default(now())
-
-  // Relations
+   commentsCount Int             @default(0)
   authorId String
   author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments Comment[]
@@ -88,24 +92,23 @@ model Video {
 // - playlistVideos PlaylistVideo[]
 
 model Comment {
-  id         String   @id @default(uuid())
-  content    String
-  likesCount Int      @default(0)
-  createdAt  DateTime @default(now())
+  id            String   @id @default(uuid())
+  content       String
+  likesCount    Int      @default(0)
+  dislikesCount Int      @default(0)
+  isPinned      Boolean  @default(false)
+  repliesCount  Int      @default(0)      
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  authorId String
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  videoId  String
+  video    Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  likes    Like[]
 
-  // Relations
-  authorId      String
-  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  videoId       String
-  video         Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  likes         Like[]
-  // KEYINROQ QO'SHISH MUMKIN (REPLY SYSTEM):
-  dislikesCount Int       @default(0)
-  isPinned      Boolean   @default(false)
-  updatedAt     DateTime  @updatedAt
-  parentId      String?
-  parent        Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
-  replies       Comment[] @relation("CommentReplies")
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies")
 
   @@map("comment")
 }

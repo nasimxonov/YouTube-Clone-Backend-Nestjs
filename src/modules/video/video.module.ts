@@ -1,9 +1,27 @@
 import { Module } from '@nestjs/common';
-import { MovieService } from './video.service';
-import { MovieController } from './video.controller';
+import { MulterModule } from '@nestjs/platform-express';
+import { VideoService } from './video.service';
+import { VideoController } from './video.controller';
+import VideoConvertService from './video_convert.service';
+import { diskStorage } from 'multer';
+import * as path from 'path';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  controllers: [MovieController],
-  providers: [MovieService],
+  imports: [
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const ext = path.extname(file.originalname);
+          const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+          cb(null, uniqueName);
+        },
+      }),
+    }),
+    JwtModule,
+  ],
+  controllers: [VideoController],
+  providers: [VideoService, VideoConvertService],
 })
-export class MovieModule {}
+export class VideoModule {}

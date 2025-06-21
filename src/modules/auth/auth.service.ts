@@ -6,10 +6,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import PrismaService from 'src/core/database/prisma.service';
+import { PrismaService } from 'src/core/database/prisma.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import VerifyOtpDto from './dto/verify.otp.dto';
-import OtpService from './otp.service';
+import { OtpService } from './otp.service';
 import * as bcrypt from 'bcrypt';
 import { sendCodeLoginDto, verifyCodeLoginDto } from './dto/login-auth.dto';
 import { SendOtpDto } from './dto/send-otp.dto';
@@ -77,7 +77,7 @@ export class AuthService {
       },
     });
 
-    const token = this.jwtService.sign({ user_id: user.id });
+    const token = this.jwtService.sign({ id: user.id, role: user.role });
     await this.otpService.delSessionTokenUser(key);
     return token;
   }

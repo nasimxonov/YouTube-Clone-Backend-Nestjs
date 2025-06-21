@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ResendService } from 'nestjs-resend';
-import OtpService from './otp.service';
-import RedisService from 'src/core/database/redis.service';
+import { OtpService } from './otp.service';
+import {RedisService} from 'src/core/database/redis.service';
 
 @Injectable()
 export class EmailOtpService {
@@ -20,16 +20,16 @@ export class EmailOtpService {
 
     await this.sendEmailToken(token, email);
 
-    const url = `http://${this.configService.get('HOST_EMAIL_URL') as string}:4000/api/user/verify-email?token=${token}`;
+    const url = `http://${this.configService.get('HOST_EMAIL_URL') as string}:4000/api/auth/verify-email?token=${token}`;
 
     const fromEmail = this.configService.get('HOST_EMAIL') as string;
 
     try {
-      await this.resendService.send({
+      const response = await this.resendService.send({
         from: fromEmail,
         to: email,
         subject: 'Hello Word',
-        html: ` <a href=${url} style="display: inline-block;
+        html: `<a href=${url} style="display: inline-block;
         padding: 10px 20px;
         background-color: blue;
         color: white;
@@ -37,12 +37,13 @@ export class EmailOtpService {
         border: 2px solid blue;
         border-radius: 5px;">
         Tasdiqlash
-        </a>`,
+      </a>`,
       });
 
       return token;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      console.error('Email yuborishda xatolik:', error);
+      throw new InternalServerErrorException('Email yuborilmadi');
     }
   }
 
@@ -64,5 +65,4 @@ export class EmailOtpService {
 
     return await this.redisService.getKey(key);
   }
-  
 }

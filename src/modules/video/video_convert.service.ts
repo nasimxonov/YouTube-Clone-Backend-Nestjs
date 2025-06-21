@@ -2,8 +2,10 @@ import ffprobeInstaller from '@ffprobe-installer/ffprobe';
 import { Injectable } from '@nestjs/common';
 import ffmpegPath from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
+
+
 @Injectable()
-class VideoService {
+class VideoConvertService {
   constructor() {
     ffmpeg.setFfprobePath(ffprobeInstaller.path);
     ffmpeg.setFfmpegPath(ffmpegPath as unknown as string);
@@ -48,25 +50,33 @@ class VideoService {
       });
     });
   }
+
+  getDuration(videoPath: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+      ffmpeg.ffprobe(videoPath, (err, metadata) => {
+        if (err) return reject(err);
+        const duration = metadata.format.duration;
+        resolve(Math.floor(duration || 0)); 
+      });
+    });
+  }
+
   getChunkProps(range: string, fileSize: number) {
-    if (range) {
-      const parts = range.replace(/bytes=/, '').split('-');
-      const start = parseInt(parts[0], 10);
-      let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const parts = range.replace(/bytes=/, '').split('-');
+    const start = parseInt(parts[0], 10);
+    let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
-      const chunkSize = end - start;
+    const maxChunkSize = Math.floor(4 * 1024 * 1024);
 
-      return {
-        start,
-        end,
-        chunkSize,
-      };
+    if (end - start + 1 > maxChunkSize) {
+      end = start + maxChunkSize - 1;
     }
+    const chunkSize = end - start + 1;
     return {
-      start: 0,
-      end: fileSize,
-      chunkSize: fileSize,
+      start,
+      end,
+      chunkSize,
     };
   }
 }
-export default VideoService;
+export default VideoConvertService;

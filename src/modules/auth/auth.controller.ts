@@ -5,32 +5,33 @@ import {
   HttpStatus,
   Post,
   Res,
+  Get,
+  Query,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import VerifyOtpDto from './dto/verify.otp.dto';
-import { sendCodeLoginDto, verifyCodeLoginDto } from './dto/login-auth.dto';
+import { EmailOtpService } from './email.service';
 import { SendOtpDto } from './dto/send-otp.dto';
+import VerifyOtpDto from './dto/verify.otp.dto';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { sendCodeLoginDto, verifyCodeLoginDto } from './dto/login-auth.dto';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {
-  }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly emailOtpService: EmailOtpService,
+  ) {}
 
   @Post('send-otp')
   async sendOtpUser(@Body() sendOtpDto: SendOtpDto) {
-  
     const response = await this.authService.sendOtpUser(sendOtpDto);
     return response;
   }
 
   @Post('verify-otp')
   async verifyOtp(@Body() data: VerifyOtpDto) {
-    
     return await this.authService.verifyOtp(data);
-
-
   }
 
   @Post('register')
@@ -71,5 +72,35 @@ export class AuthController {
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @Post('send-email-link')
+  async sendEmailLink(@Body('email') email: string) {
+    try {
+      const token = await this.emailOtpService.sendEmailLink(email);
+      return {
+        message: 'Email muvaffaqiyatli yuborildi',
+        token,
+      };
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    if (!token) {
+      throw new HttpException('Token topilmadi', HttpStatus.BAD_REQUEST);
+    }
+
+    const data = await this.emailOtpService.getEmailToken(token);
+    if (!data) {
+      throw new HttpException(
+        "Token eskirgan yoki notog'ri",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return JSON.parse(data);
   }
 }

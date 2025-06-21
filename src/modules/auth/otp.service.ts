@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import RedisService from 'src/core/database/redis.service';
+import {RedisService} from 'src/core/database/redis.service';
 import { generate } from 'otp-generator';
-import SmsService from './sms.service';
-import OtpSecurityService from './otp.security.service';
+import { SmsService } from './sms.service'; 
+import { OtpSecurityService } from './otp.security.service';
 import * as crypto from 'crypto';
 
 @Injectable()
-class OtpService {
+export class OtpService {
   constructor(
     private redisService: RedisService,
     private smsService: SmsService,
@@ -81,9 +81,8 @@ class OtpService {
   }
 
   async checkSessionTokenUser(key: string, token: string) {
-    
     const sessionToken = await this.redisService.getKey(key);
-    
+
     if (!sessionToken || sessionToken !== token)
       throw new BadRequestException('session token expired');
   }
@@ -91,8 +90,4 @@ class OtpService {
   async delSessionTokenUser(key: string) {
     await this.redisService.delKey(key);
   }
-
-  
 }
-
-export default OtpService;

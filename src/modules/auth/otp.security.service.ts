@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import RedisService from 'src/core/database/redis.service';
+import {RedisService} from 'src/core/database/redis.service';
 
 @Injectable()
-class OtpSecurityService {
+export class OtpSecurityService {
   private maxAttemptsOtp: number = 3;
   private blockedDuration: number = 3600;
   private otpAttemptsDuration: number = 3600;
+
   constructor(private redisService: RedisService) {}
+
   async recordFailedOtpAttempts(phone_number: string) {
     const key = `otp_attempts:${phone_number}`;
     const checkExistsKey = await this.redisService.redis.exists(key);
@@ -21,6 +23,7 @@ class OtpSecurityService {
     if (res === 0) await this.temporaryBlockUser(phone_number, attempts);
     return res;
   }
+
   async temporaryBlockUser(phone_number: string, attempts: number) {
     const key = `temporary_blocked_user:${phone_number}`;
     const date = Date.now();
@@ -52,4 +55,3 @@ class OtpSecurityService {
     await this.redisService.delKey(key);
   }
 }
-export default OtpSecurityService;
