@@ -215,6 +215,7 @@ enum NotificationType {
   MENTION
 }
 
+
 enum Role {
   SUPERADMIN
   ADMIN
