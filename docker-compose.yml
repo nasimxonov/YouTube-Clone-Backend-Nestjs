@@ -16,9 +16,22 @@ services:
       context: .
     container_name: nest-api
     ports:
-      - '4002:4000'
+      - '4000:4000'
     restart: always
     environment:
       DATABASE_URL: postgres://postgres:6@db:5432/youtube
     depends_on:
       - db
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./certs:/etc/nginx/certs:ro
+      - ./uploads:/app/uploads:ro
+    depends_on:
+      - api
