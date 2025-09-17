@@ -14,5 +14,3 @@ export class UpdateVideoDto {
   @IsOptional()
   visibility: Visibility;
 }
-
-

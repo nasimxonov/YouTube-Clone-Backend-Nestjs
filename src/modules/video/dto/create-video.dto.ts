@@ -18,5 +18,3 @@ export class CreateVideoDto {
   @IsEnum(Visibility)
   visibility: Visibility;
 }
-
-

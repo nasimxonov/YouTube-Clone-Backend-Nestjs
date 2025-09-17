@@ -21,7 +21,7 @@ export class VideoService {
   ) {}
   async uploadVideo(
     file: Express.Multer.File,
-    
+
     videoData: CreateVideoDto,
     id: string,
     thumbnail: Express.Multer.File,
@@ -107,7 +107,7 @@ export class VideoService {
       baseQuality,
     );
     // console.log(readDir, fileName);
-    
+
     if (!readDir.includes(fileName as string))
       throw new NotFoundException('video not found');
     const innerVideoDir = fs.readdirSync(

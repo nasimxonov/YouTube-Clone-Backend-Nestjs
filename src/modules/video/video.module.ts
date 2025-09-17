@@ -7,5 +7,3 @@ import { VideoController } from './video.controller';
   providers: [VideoService],
 })
 export class VideoModule {}
-
-

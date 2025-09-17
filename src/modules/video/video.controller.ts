@@ -82,8 +82,6 @@ export class VideoController {
       contentRange as string,
       res,
     );
-
-    
   }
 
   @Get(':id')
