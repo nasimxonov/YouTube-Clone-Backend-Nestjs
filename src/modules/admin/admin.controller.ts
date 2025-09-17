@@ -20,7 +20,6 @@ import { Request } from 'express';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  
   @Get()
   async adminDashboard(@Req() req: Request) {
     try {

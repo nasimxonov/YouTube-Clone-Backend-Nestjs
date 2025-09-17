@@ -22,7 +22,6 @@ export class AdminService {
       0,
     );
 
-    
     const totalWatchTimeData = await this.db.prisma.video.findMany({
       select: { viewsCount: true, duration: true },
     });

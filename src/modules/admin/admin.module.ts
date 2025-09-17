@@ -7,4 +7,3 @@ import { AdminController } from './admin.controller';
   providers: [AdminService],
 })
 export class AdminModule {}
-
