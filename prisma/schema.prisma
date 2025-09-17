@@ -43,7 +43,7 @@ model OAuthAccount {
   id           String        @id @default(uuid())
   userId       String
   provider     OAuthProvider
-  providerId   String // Google ID
+  providerId   String
   accessToken  String?
   refreshToken String?
   expiresAt    DateTime?
@@ -60,8 +60,6 @@ model OAuthAccount {
   @@unique([userId, provider])
   @@map("oauthaccount")
 }
-
-// - notifications Notification[]
 
 model Video {
   id            String      @id @default(uuid())
@@ -97,16 +95,6 @@ model Category {
   @@map("category")
 }
 
-// KEYINROQ QO'SHISH MUMKIN:
-// - fileSize BigInt
-// - resolution String // 1080p, 720p, etc.
-// - category String?
-// - tags String[]
-// - commentsCount Int @default(0)
-// - publishedAt DateTime?
-// - watchHistory WatchHistory[]
-// - playlistVideos PlaylistVideo[]
-
 model Comment {
   id         String   @id @default(uuid())
   content    String
@@ -114,7 +102,6 @@ model Comment {
   createdAt  DateTime @default(now())
   isPinned   Boolean  @default(false)
 
-  // Relations
   authorId String
   author   Users  @relation(fields: [authorId], references: [id], onDelete: Cascade)
   videoId  String
@@ -123,13 +110,6 @@ model Comment {
 
   @@map("comments")
 }
-
-// KEYINROQ QO'SHISH MUMKIN (REPLY SYSTEM):
-// - dislikesCount Int @default(0)
-// - updatedAt DateTime @updatedAt
-// - parentId String?
-// - parent Comment? @relation("CommentReplies", fields: [parentId], references: [id])
-// - replies Comment[] @relation("CommentReplies")
 
 model Subscription {
   id                   String   @id @default(cuid())
@@ -151,7 +131,6 @@ model Playlist {
   visibility  Visibility @default(PUBLIC)
   createdAt   DateTime   @default(now())
 
-  // Relations
   authorId String
   author   Users           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   videos   PlaylistVideo[]
@@ -198,7 +177,7 @@ enum LikeType {
 model WatchHistory {
   id        String   @id @default(cuid())
   watchedAt DateTime @default(now())
-  watchTime Int // seconds watched
+  watchTime Int
   userId    String
   user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   videoId   String
@@ -206,27 +185,6 @@ model WatchHistory {
 
   @@unique([userId, videoId])
 }
-
-// KEYINROQ QO'SHISH MUMKIN BO'LGAN MODELLAR:
-/**
- * model Notification {
- * id        String           @id @default(cuid())
- * type      NotificationType
- * title     String
- * message   String
- * isRead    Boolean          @default(false)
- * createdAt DateTime         @default(now())
- * userId    String
- * user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
- * }
- * enum NotificationType {
- * NEW_VIDEO
- * NEW_SUBSCRIBER
- * VIDEO_LIKED
- * COMMENT_REPLY
- * MENTION
- * }
- */
 
 enum Role {
   SUPERADMIN
