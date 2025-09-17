@@ -19,7 +19,6 @@ class VideoServices {
         resolve({ width: video?.width, height: video?.height });
       });
     });
-    
   }
   convertToResolutions(
     inputPath: string,

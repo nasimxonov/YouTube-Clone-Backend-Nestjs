@@ -10,16 +10,14 @@ import { SeederModule } from './database/seeders/seeder.module';
 
 @Global()
 @Module({
-
   imports: [
     DatabaseModule,
     SeederModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-  
     }),
-  
+
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
