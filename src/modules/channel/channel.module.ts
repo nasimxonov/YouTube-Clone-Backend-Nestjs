@@ -19,7 +19,6 @@ import { v4 as uuid } from 'uuid';
         destination: './uploads/banners',
       }),
 
-      
       fileFilter: (req, file, callback) => {
         const allowed = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!allowed.includes(file.mimetype)) {

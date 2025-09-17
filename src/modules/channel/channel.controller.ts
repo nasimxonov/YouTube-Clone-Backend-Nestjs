@@ -81,7 +81,6 @@ export class ChannelController {
 
     return await this.channelService.getSubscriptionFeed(userId, limit, page);
   }
-  
 
   @Get()
   @UseGuards(RoleGuard)

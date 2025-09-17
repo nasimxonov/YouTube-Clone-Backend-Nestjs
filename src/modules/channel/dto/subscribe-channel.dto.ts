@@ -5,4 +5,3 @@ export class SubscribeDto {
   @IsBoolean()
   notificationEnabled: boolean;
 }
-
