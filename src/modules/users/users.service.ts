@@ -18,8 +18,6 @@ export class UsersService {
     if (!findUser) throw new NotFoundException('User not found');
     const { password, ...userInfo } = findUser;
     return userInfo;
-
-    
   }
 
   async updateUserProfile(

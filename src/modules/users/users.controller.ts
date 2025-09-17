@@ -1,26 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Query,
-  HttpCode,
-  Req,
+  Get,
   Put,
-  UseInterceptors,
-  UseGuards,
-  SetMetadata,
+  Query,
+  Req,
   UploadedFile,
-
-  
+  UseInterceptors
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Request } from 'express';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
