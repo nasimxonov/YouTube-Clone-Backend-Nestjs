@@ -19,7 +19,6 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  
   @Post(':videoid/video')
   async createComment(
     @Param('videoid') videoId: string,

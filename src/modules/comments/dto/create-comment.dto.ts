@@ -4,4 +4,3 @@ export class CreateCommentDto {
   @IsString()
   content: string;
 }
-
