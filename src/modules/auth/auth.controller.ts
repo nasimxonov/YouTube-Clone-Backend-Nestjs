@@ -21,7 +21,6 @@ export class AuthController {
     console.log('Google OAuth process started');
   }
 
-  
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {

@@ -8,4 +8,3 @@ import { GoogleStrategy } from './strategies/google.strategies';
   providers: [AuthService, GoogleStrategy],
 })
 export class AuthModule {}
-

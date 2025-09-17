@@ -101,7 +101,6 @@ export class AuthService {
       },
     });
 
-    
     if (!find_user) {
       throw new BadRequestException('User not found!');
     }
