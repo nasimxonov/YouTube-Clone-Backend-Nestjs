@@ -7,5 +7,3 @@ import { CategoryController } from './category.controller';
   providers: [CategoryService],
 })
 export class CategoryModule {}
-
-

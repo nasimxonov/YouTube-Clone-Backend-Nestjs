@@ -20,7 +20,6 @@ export class CategoryController {
     return this.categoryService.create(dto.title);
   }
 
-  
   @Get()
   async findAll() {
     return this.categoryService.findAll();
