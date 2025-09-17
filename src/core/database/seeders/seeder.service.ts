@@ -24,8 +24,6 @@ export class SeederService implements OnModuleInit {
       where: { username },
     });
 
-    
-
     if (!findExistsAdmin) {
       const hashedPassword = await bcrypt.hash(password, 12);
       await this.db.prisma.users.create({

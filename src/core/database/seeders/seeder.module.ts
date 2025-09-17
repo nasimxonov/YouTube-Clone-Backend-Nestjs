@@ -6,4 +6,3 @@ import { SeederService } from './seeder.service';
   exports: [SeederService],
 })
 export class SeederModule {}
-
