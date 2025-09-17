@@ -17,8 +17,6 @@ import { UpdatePlaylistDto } from './dto/update-playlist.dto';
 import { Request } from 'express';
 import { AddVideoPlaylistDto } from './dto/add.video.playlist.dto';
 
-
-
 @Controller('playlists')
 export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}

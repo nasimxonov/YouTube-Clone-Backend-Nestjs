@@ -17,8 +17,6 @@ export class PlaylistService {
       data: { ...playlistData, authorId: userId },
     });
     return result;
-
-    
   }
 
   async addVideoPlaylist(id: string, data: AddVideoPlaylistDto) {

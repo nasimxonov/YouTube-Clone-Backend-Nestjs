@@ -15,5 +15,3 @@ export class UpdatePlaylistDto {
   @IsOptional()
   visibility: Visibility;
 }
-
-

@@ -13,6 +13,3 @@ export class CreatePlaylistDto {
   @IsEnum(Visibility)
   visibility: Visibility;
 }
-
-
-
