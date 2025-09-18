@@ -16,7 +16,7 @@ import { OAuthModule } from './modules/oauth/oauth.module';
 @Module({
   imports: [
     UsersModule,
-    AuthModule,
+    // AuthModule,
     OAuthModule,
     CoreModule,
     ChannelModule,
