@@ -180,7 +180,10 @@ export class VideoService {
         author: {
           select: {
             id: true,
+            likes: true,
+            totalViews: true,
             username: true,
+            
             channelName: true,
             avatar: true,
             is_email_verified: true,
@@ -235,12 +238,13 @@ export class VideoService {
       status: 'PUBLISHED',
     };
 
-    const findCategory = await this.db.prisma.category.findFirst({where: {id: categoryId}})
+    const findCategory = await this.db.prisma.category.findFirst({
+      where: { id: categoryId },
+    });
 
     if (findCategory) {
       where.categoryId = categoryId;
     }
- 
 
     const videos = await this.db.prisma.video.findMany({
       where,
@@ -265,7 +269,7 @@ export class VideoService {
     const totalVideos = await this.db.prisma.video.count({ where });
     const totalPages = Math.ceil(totalVideos / limit);
     // console.log(videos);
-    
+
     return {
       videos,
       pagination: {
