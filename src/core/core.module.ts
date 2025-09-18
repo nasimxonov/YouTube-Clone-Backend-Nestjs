@@ -2,7 +2,6 @@ import { DynamicModule, Global, Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { ResendModule } from 'nestjs-resend';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import VideoServices from './video.service';
