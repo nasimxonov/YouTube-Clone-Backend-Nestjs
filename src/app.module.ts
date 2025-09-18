@@ -11,12 +11,13 @@ import { PlaylistModule } from './modules/playlist/playlist.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { CategoryModule } from './modules/category/category.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { OAuthModule } from './modules/oauth/oauth.module';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
-    // OAuthModule,
+    OAuthModule,
     CoreModule,
     ChannelModule,
     VideoModule,
