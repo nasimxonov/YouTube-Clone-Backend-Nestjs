@@ -32,10 +32,10 @@ import { OAuthModule } from './modules/oauth/oauth.module';
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceoptor,
     },
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
   ],
 })
 export class AppModule {}

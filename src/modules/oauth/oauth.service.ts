@@ -12,24 +12,39 @@ export class OAuthService {
   async oauthGoogleCallback(user: any) {
     const findUSer = await this.db.prisma.users.findFirst({
       where: { email: user.email },
+      include: { OAuthAccount: true },
     });
     if (!findUSer) {
       const newUser = await this.db.prisma.users.create({
         data: {
           email: user.email,
           username: user.fullName,
+          isBlocked: true,
         },
       });
-      const token = await this.jwt.signAsync({
-        id: newUser.id,
-        role: newUser.role,
+      await this.db.prisma.oAuthAccount.create({
+        data: {
+          provider: 'Google',
+          providerId: user.googleId,
+          userId: newUser.id,
+        },
       });
+      const token = await this.jwt.signAsync({ userId: newUser.id });
       return { token };
     }
-    const token = await this.jwt.signAsync({
-      id: findUSer.id,
-      role: findUSer.role,
-    });
+    const findAccount = findUSer.OAuthAccount.find(
+      (account) => account.provider === 'Google',
+    );
+    if (!findAccount) {
+      await this.db.prisma.oAuthAccount.create({
+        data: {
+          provider: 'Google',
+          providerId: user.googleId,
+          userId: findUSer.id,
+        },
+      });
+    }
+    const token = await this.jwt.signAsync({ userId: findUSer.id });
     return { token };
   }
 
@@ -49,7 +64,7 @@ export class OAuthService {
       },
     });
     if (!findUSer) throw new NotFoundException('User not found');
-    console.log("nasimxonovS");
+    console.log('nasimxonovS');
     return findUSer;
   }
 }

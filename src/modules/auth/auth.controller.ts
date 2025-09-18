@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login.auth.dto';
 
-@Controller('auth')
+@Controller('test-auth')
 @SetMetadata('isFreeAuth', true)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
