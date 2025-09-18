@@ -26,9 +26,9 @@ export class AuthGuard implements CanActivate {
     const isFreeAuth = this.reflector.get('isFreeAuth', handler);
 
     if (isFreeAuth || isFreeAuthClass) return true;
-
+    console.log(token);
     try {
-      let { userId } = await this.jwtService.verifyAsync(token);
+      let { userId } = await this.jwtService.verifyAsync(token.token);
       request.userId = userId;
       return true;
     } catch (error) {

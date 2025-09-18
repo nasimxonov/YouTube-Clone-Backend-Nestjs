@@ -30,7 +30,7 @@ export class OAuthController {
   @Get('me')
   @UseGuards(AuthGuard)
   async getMe(@Req() req: Request) {
-    const { id, role } = req['userId'];
-    return await this.authService.getMe(id);
+    const userId = req['userId'];
+    return await this.authService.getMe(userId);
   }
 }
