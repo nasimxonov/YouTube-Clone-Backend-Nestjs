@@ -11,7 +11,7 @@ model Users {
   id                 String         @id @default(uuid())
   email              String         @unique
   username           String         @unique
-  password           String
+  password           String?
   firstName          String?
   lastName           String?
   avatar             String?
@@ -27,7 +27,7 @@ model Users {
   loginAttempts      Int            @default(0)
   subscribersCount   Int            @default(0)
   totalViews         Int            @default(0)
-  // OAuthAccount       OAuthAccount[]
+  OAuthAccount       OAuthAccount[]
   videos             Video[]
   comments           Comment[]
   likes              Like[]
@@ -39,27 +39,27 @@ model Users {
   @@map("users")
 }
 
-// model OAuthAccount {
-//   id           String        @id @default(uuid())
-//   userId       String
-//   provider     OAuthProvider
-//   providerId   String
-//   accessToken  String?
-//   refreshToken String?
-//   expiresAt    DateTime?
-//   tokenType    String?
-//   scope        String?
-//   idToken      String?
+model OAuthAccount {
+  id           String        @id @default(uuid())
+  userId       String
+  provider     OAuthProvider
+  providerId   String
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  tokenType    String?
+  scope        String?
+  idToken      String?
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-//   users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-//   @@unique([provider, providerId])
-//   @@unique([userId, provider])
-//   @@map("oauthaccount")
-// }
+  @@unique([provider, providerId])
+  @@unique([userId, provider])
+  @@map("oauthaccount")
+}
 
 model Video {
   id            String      @id @default(uuid())
@@ -201,12 +201,12 @@ enum VideoStatus {
   DELETED
 }
 
-// enum OAuthProvider {
-//   Google
-//   FACEBOOK
-//   GITHUB
-//   APPLE
-// }
+enum OAuthProvider {
+  Google
+  FACEBOOK
+  GITHUB
+  APPLE
+}
 
 enum Visibility {
   PUBLIC
