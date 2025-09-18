@@ -21,9 +21,7 @@ export class CategoryService {
 
   async findAll() {
     try {
-      return await this.db.prisma.category.findMany({
-        include: { videos: true },
-      });
+      return await this.db.prisma.category.findMany();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

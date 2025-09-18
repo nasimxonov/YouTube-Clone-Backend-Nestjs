@@ -1,26 +1,28 @@
 import {
-  Controller,
   Get,
   Post,
   Put,
-  Delete,
   Body,
   Param,
+  Delete,
+  Controller,
+  SetMetadata,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('categories')
+@SetMetadata('isFreeAuth', true)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Post()
+  @Post('add')
   async create(@Body() dto: CreateCategoryDto) {
     return this.categoryService.create(dto.title);
   }
 
-  @Get()
+  @Get('all')
   async findAll() {
     return this.categoryService.findAll();
   }
