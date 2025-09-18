@@ -1,127 +1,53 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/core/database/prisma.service';
+import bcrypt from 'bcrypt';
+import { RegisterAuthDto } from './dto/register-auth.dto';
+import { LoginAuthDto } from './dto/login.auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private jwtService: JwtService,
     private db: PrismaService,
-    private jwt: JwtService,
   ) {}
 
-  async OAuthGoogleCallback(user: any): Promise<string> {
-    const findUser = await this.db.prisma.users.findFirst({
-      where: { email: user.email },
-      include: { OAuthAccount: true },
+  async register(data: RegisterAuthDto) {
+    const findEmail = await this.db.prisma.users.findFirst({
+      where: { email: data.email },
     });
-
-    if (!findUser) {
-      const newUser = await this.db.prisma.users.create({
-        data: {
-          email: user.email,
-          firstName: user.given_name || '',
-          lastName: user.family_name || '',
-          username: user.name || user.email.split('@')[0],
-          password: await bcrypt.hash(Math.random().toString(36).slice(-8), 12),
-        },
-      });
-
-      await this.db.prisma.oAuthAccount.create({
-        data: {
-          provider: 'Google',
-          providerId: user.sub,
-          userId: newUser.id,
-        },
-      });
-
-      const token = await this.jwt.signAsync({ userId: newUser.id });
-      return token;
-    }
-
-    const findAccount = findUser.OAuthAccount.find(
-      (account) => account.provider === 'Google',
-    );
-
-    if (!findAccount) {
-      await this.db.prisma.oAuthAccount.create({
-        data: {
-          provider: 'Google',
-          providerId: user.sub,
-          userId: findUser.id,
-        },
-      });
-    }
-
-    const token = await this.jwt.signAsync({ userId: findUser.id });
-    return token;
-  }
-
-  async register(data: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-  }): Promise<string> {
-    const findUser = await this.db.prisma.users.findFirst({
-      where: {
-        email: data.email,
-      },
+    if (findEmail) throw new ConflictException('this email already existed!');
+    const findUsername = await this.db.prisma.users.findFirst({
+      where: { username: data.username },
     });
-
-    if (findUser) {
-      throw new ConflictException('User already exists');
-    }
 
     const hashedPassword = await bcrypt.hash(data.password, 12);
-
-    const user = await this.db.prisma.users.create({
-      data: {
-        ...data,
-        password: hashedPassword,
-      },
+    const { password, ...newUser } = await this.db.prisma.users.create({
+      data: { ...data, password: hashedPassword },
     });
-
-    const token = await this.jwt.signAsync({
-      userId: user.id,
-    });
-
-    return token;
+    const token = this.jwtService.sign({ userId: newUser.id });
+    return { message: 'user succesfully created', data: newUser, token };
   }
 
-  async login(data: { email: string; password: string }): Promise<string> {
-    const find_user = await this.db.prisma.users.findFirst({
-      where: {
-        email: data.email,
-      },
+  async loginWithPassword(data: LoginAuthDto) {
+    const findUser = await this.db.prisma.users.findFirst({
+      where: { email: data.email },
     });
 
-    if (!find_user) {
-      throw new BadRequestException('User not found!');
-    }
-
-    if (!find_user?.password) {
-      throw new BadRequestException('password not set');
-    }
+    if (!findUser) throw new NotFoundException('User not found');
 
     const comparePassword = await bcrypt.compare(
       data.password,
-      find_user.password,
+      findUser.password,
     );
 
-    if (!comparePassword) {
-      throw new BadRequestException('Email or Password incorrect');
-    }
+    if (!comparePassword) throw new NotFoundException('Password incorrect');
 
-    const token = await this.jwt.signAsync({
-      userId: find_user.id,
-    });
-
+    const token = this.jwtService.sign({ userId: findUser.id });
     return token;
   }
 }
