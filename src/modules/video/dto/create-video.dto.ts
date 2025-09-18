@@ -1,6 +1,12 @@
 import { Visibility } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateVideoDto {
   @IsString()
@@ -9,6 +15,9 @@ export class CreateVideoDto {
   @IsOptional()
   @IsString()
   description: string;
+
+  @IsUUID()
+  categoryId?: string;
 
   @IsNumber()
   @Type(() => Number)

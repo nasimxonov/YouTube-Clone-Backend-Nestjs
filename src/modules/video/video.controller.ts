@@ -106,7 +106,9 @@ export class VideoController {
   async getVideosFeed(
     @Query('limit') limit: number,
     @Query('page') page: number,
+    @Query('categoryId') categoryId?: string,
   ) {
-    return await this.videoService.getVideosFeed(page, limit);
+    return await this.videoService.getVideosFeed(page, limit, categoryId);
   }
 }
+

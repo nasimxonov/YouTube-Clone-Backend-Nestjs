@@ -73,6 +73,7 @@ export class VideoService {
       const result = await this.db.prisma.video.create({
         data: {
           ...videoData,
+          categoryId: videoData.categoryId || null,
           videoUrl: fileNameData,
           authorId: id,
           status: 'PUBLISHED',
@@ -227,12 +228,22 @@ export class VideoService {
     return { message: 'Video successful deleted' };
   }
 
-  async getVideosFeed(page: number, limit: number) {
+  async getVideosFeed(page: number, limit: number, categoryId?: string) {
     const offset = (page - 1) * limit;
+
+    let where: any = {
+      status: 'PUBLISHED',
+    };
+
+    const findCategory = await this.db.prisma.category.findFirst({where: {id: categoryId}})
+
+    if (findCategory) {
+      where.categoryId = categoryId;
+    }
+ 
+
     const videos = await this.db.prisma.video.findMany({
-      where: {
-        status: 'PUBLISHED',
-      },
+      where,
       include: {
         author: {
           select: {
@@ -250,13 +261,11 @@ export class VideoService {
       skip: offset,
       take: limit,
     });
-    const totalVideos = await this.db.prisma.video.count({
-      where: {
-        status: 'PUBLISHED',
-      },
-    });
-    const totalPages = Math.ceil(totalVideos / limit);
 
+    const totalVideos = await this.db.prisma.video.count({ where });
+    const totalPages = Math.ceil(totalVideos / limit);
+    // console.log(videos);
+    
     return {
       videos,
       pagination: {
