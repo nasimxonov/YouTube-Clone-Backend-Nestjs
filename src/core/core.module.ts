@@ -29,13 +29,6 @@ import { SeederModule } from './database/seeders/seeder.module';
         },
       }),
     }),
-    ResendModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        apiKey: configService.get('RESEND_API_KEY') as string,
-      }),
-    }) as DynamicModule,
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
