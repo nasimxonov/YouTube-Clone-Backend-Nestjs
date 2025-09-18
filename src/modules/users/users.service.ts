@@ -19,7 +19,6 @@ export class UsersService {
     const { password, ...userInfo } = findUser;
     return userInfo;
   }
-
   async updateUserProfile(
     avatarPath: string,
     userData: UpdateUserDto,
