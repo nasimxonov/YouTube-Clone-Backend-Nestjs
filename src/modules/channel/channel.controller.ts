@@ -1,25 +1,24 @@
 import {
-  Controller,
   Get,
+  Put,
+  Req,
   Post,
   Body,
-  Patch,
+  Query,
   Param,
   Delete,
-  Put,
-  UseInterceptors,
-  UploadedFile,
-  Req,
-  SetMetadata,
   UseGuards,
-  Query,
+  Controller,
+  SetMetadata,
+  UploadedFile,
+  UseInterceptors
 } from '@nestjs/common';
-import { ChannelService } from './channel.service';
-import { SubscribeDto } from './dto/subscribe-channel.dto';
-import { UpdateChannelDto } from './dto/update-channel.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { RoleGuard } from 'src/common/guards/role.guard';
+import { ChannelService } from './channel.service';
+import { SubscribeDto } from './dto/subscribe-channel.dto';
+import { UpdateChannelDto } from './dto/update-channel.dto';
 
 @Controller('channels')
 export class ChannelController {
@@ -33,11 +32,9 @@ export class ChannelController {
     @Req() req: Request,
   ) {
     const id = req['userId'];
-    console.log(banner);
     const bannerUrl = banner?.filename
       ? `http://${process.env.HOST}:${process.env.PORT}/uploads/banners/${banner.filename}`
       : '';
-    console.log(bannerUrl);
     return await this.channelService.updateChannel(bannerUrl, body, id);
   }
 
@@ -77,8 +74,6 @@ export class ChannelController {
     @Req() req: Request,
   ) {
     const userId = req['userId'];
-    console.log('kelyabdi', userId);
-
     return await this.channelService.getSubscriptionFeed(userId, limit, page);
   }
 
@@ -91,8 +86,6 @@ export class ChannelController {
     @Req() req: Request,
   ) {
     const userId = req['userId'];
-    console.log(userId);
-
     return await this.channelService.getSubscription(userId, limit, page);
   }
 }

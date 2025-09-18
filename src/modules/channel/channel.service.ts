@@ -137,10 +137,7 @@ export class ChannelService {
   }
 
   async getSubscriptionFeed(id: string, limit: number, page: number) {
-    console.log('keldi');
-
     const findChannel = await this.db.prisma.users.findFirst({ where: { id } });
-    console.log(findChannel, 'ishladi');
     if (!findChannel) throw new NotFoundException('Channel not found am');
     const [subscriptions, totalCount] = await Promise.all([
       this.db.prisma.subscription.findMany({
