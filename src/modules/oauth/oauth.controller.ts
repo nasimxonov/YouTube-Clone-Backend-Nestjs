@@ -10,8 +10,7 @@ export class OAuthController {
 
   @Get('google')
   @UseGuards(GoogleGuard('google'))
-  googleAuthRedirect() {
-  }
+  googleAuthRedirect() {}
 
   @Get('google/callback')
   @UseGuards(GoogleGuard('google'))
@@ -24,8 +23,8 @@ export class OAuthController {
       maxAge: 1.1 * 3600 * 1000,
       httpOnly: true,
     });
-    return res.redirect('http://localhost:5500');
-    // return res.redirect('http://192.168.34.219:5173');
+    const url = process.env.FRONT_HOMEPAGE_URL as string;
+    return res.redirect(url);
   }
 
   @Get('me')
