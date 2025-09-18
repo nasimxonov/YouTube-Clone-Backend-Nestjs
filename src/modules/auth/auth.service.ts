@@ -42,7 +42,7 @@ export class AuthService {
 
     const comparePassword = await bcrypt.compare(
       data.password,
-      findUser.password,
+      findUser.password as string,
     );
 
     if (!comparePassword) throw new NotFoundException('Password incorrect');
