@@ -21,25 +21,25 @@ export class VideoService {
   ) {}
   async uploadVideo(
     file: Express.Multer.File,
-
     videoData: CreateVideoDto,
     id: string,
     thumbnail: Express.Multer.File,
   ) {
     const findChannel = await this.db.prisma.users.findFirst({ where: { id } });
+
     if (!findChannel) {
       await deleteFile(file.filename);
       throw new NotFoundException('Channel not found');
     }
+
     const fileName = file.filename;
-    const fileNameData = path.join(
-      process.cwd(),
-      'uploads',
-      fileName.split('.')[0],
-    );
+    const folderName = fileName.split('.')[0];
     const videoPath = path.join(process.cwd(), 'uploads', fileName);
+    const outputDir = path.join(process.cwd(), 'uploads', 'videos', folderName);
+
     const resolution: any =
       await this.videoService.getVideoResolution(videoPath);
+
     const resolutions = [
       { height: 240 },
       { height: 360 },
@@ -52,44 +52,45 @@ export class VideoService {
       (r) => r.height <= resolution.height + 6,
     );
 
-    if (validResolutions.length > 0) {
-      fs.mkdir(
-        path.join(process.cwd(), 'uploads', 'videos', fileName.split('.')[0]),
-        {
-          recursive: true,
-        },
-        (err) => {
-          if (err) throw new InternalServerErrorException(err);
-        },
-      );
-      await Promise.all(
-        this.videoService.convertToResolutions(
-          videoPath,
-          path.join(process.cwd(), 'uploads', 'videos', fileName.split('.')[0]),
-          validResolutions,
-        ),
-      );
-      fs.unlinkSync(videoPath);
-      const result = await this.db.prisma.video.create({
-        data: {
-          ...videoData,
-          categoryId: videoData.categoryId || null,
-          videoUrl: fileNameData,
-          authorId: id,
-          status: 'PUBLISHED',
-          thumbnail: `http://${process.env.HOST}:${process.env.PORT}/uploads/thumbnails/${thumbnail.filename}`,
-        },
-      });
-      return {
-        message: 'Video uploaded successfully',
-        data: result,
-      };
-    } else {
+    if (validResolutions.length === 0) {
       fs.unlinkSync(videoPath);
       throw new BadRequestException(
         'Video sifati juda past, iltimos sifatli video yuklang',
       );
     }
+
+    await fs.promises.mkdir(outputDir, { recursive: true });
+
+    await Promise.all(
+      this.videoService.convertToResolutions(
+        videoPath,
+        outputDir,
+        validResolutions,
+      ),
+    );
+
+    fs.unlinkSync(videoPath);
+
+    const bestResolution = [...validResolutions].sort(
+      (a, b) => b.height - a.height,
+    )[0];
+    const videoUrl = `/uploads/videos/${folderName}/${bestResolution.height}p.mp4`;
+
+    const result = await this.db.prisma.video.create({
+      data: {
+        ...videoData,
+        categoryId: videoData.categoryId || null,
+        videoUrl,
+        authorId: id,
+        status: 'PUBLISHED',
+        thumbnail: `http://${process.env.HOST}:${process.env.PORT}/uploads/thumbnails/${thumbnail.filename}`,
+      },
+    });
+
+    return {
+      message: 'Video uploaded successfully',
+      data: result,
+    };
   }
 
   async watchVideo(id: string, quality: string, range: string, res: Response) {
@@ -183,7 +184,7 @@ export class VideoService {
             likes: true,
             totalViews: true,
             username: true,
-            
+
             channelName: true,
             avatar: true,
             is_email_verified: true,
